@@ -78,5 +78,3 @@ export async function runExamplesInFile(path: string) {
     runModuleString(fileCode + "\n\n" + example, folderPath);
   }
 }
-
-runExamplesInFile("./a/example.ts");
