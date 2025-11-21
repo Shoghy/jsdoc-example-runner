@@ -8,7 +8,7 @@ export async function runModuleString(code: string, basePath: string) {
 function rewriteImports(code: string, basePath: string) {
   return code.replace(
     /import +([^'"]+?) +from +['"](.+?)['"]/g,
-    (full, bindings, spec) => {
+    (full, bindings, spec: string) => {
       if (spec.startsWith(".")) {
         return `import ${bindings} from "${basePath + spec.substring(1)}"`;
       }

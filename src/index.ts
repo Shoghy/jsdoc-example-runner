@@ -1,4 +1,4 @@
-import { runModuleString } from "./utils";
+import { runModuleString } from "./utils.ts";
 
 const Eol = /\r?\n/;
 const StartComment = / *\/\*\*/;
