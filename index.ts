@@ -16,10 +16,23 @@ enum State {
 }
 
 export async function runExamplesInFile(path: string) {
-  const a = Bun.file(path);
+  if (!path.startsWith("./") && !path.startsWith("/")) {
+    throw new Error("Path must start with `./` or `/`");
+  }
+
+  const absolutePath = import.meta.resolve(path).substring(7);
+  const file = Bun.file(absolutePath);
+  if (!(await file.exists())) {
+    return;
+  }
+
+  const segmentedPath = absolutePath.split("/");
+  segmentedPath.pop();
+  const folderPath = segmentedPath.join("/");
+
   const examples: string[] = [];
 
-  const fileCode = await a.text();
+  const fileCode = await file.text();
   const comments = fileCode.match(CommentReg);
   if (comments === null) {
     return;
@@ -62,8 +75,8 @@ export async function runExamplesInFile(path: string) {
   }
 
   for (const example of examples) {
-    runModuleString(fileCode + "\n\n" + example);
+    runModuleString(fileCode + "\n\n" + example, folderPath);
   }
 }
 
-runExamplesInFile("example.ts");
+runExamplesInFile("./a/example.ts");
