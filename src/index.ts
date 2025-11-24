@@ -16,14 +16,14 @@ enum State {
 }
 
 export async function runExamplesInFile(path: string) {
-  if (!path.startsWith("./") && !path.startsWith("/")) {
-    throw new Error("Path must start with `./` or `/`");
+  if (!path.startsWith(".") && !path.startsWith("/")) {
+    throw new Error("Path must start with `.` or `/`");
   }
 
   const absolutePath = import.meta.resolve(path).substring(7);
   const file = Bun.file(absolutePath);
   if (!(await file.exists())) {
-    return;
+    throw new Error("Path is not a file");
   }
 
   const segmentedPath = absolutePath.split("/");
