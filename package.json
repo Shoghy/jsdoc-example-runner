@@ -1,9 +1,27 @@
 {
   "name": "jsdoc-example-runner",
-  "module": "index.ts",
+  "module": "index.js",
   "type": "module",
+  "version": "1.0.0",
+  "author": {
+    "name": "Shoghy Martinez"
+  },
+  "license": "MIT",
+  "keywords": [
+    "test",
+    "jsdoc",
+    "examples"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Shoghy/jsdoc-example-runner"
+  },
+  "scripts": {
+    "build": "tsup"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@swc/core": "^1.15.3",
     "@types/bun": "latest",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
@@ -12,6 +30,7 @@
     "globals": "^16.5.0",
     "jiti": "^2.6.1",
     "prettier": "^3.6.2",
+    "tsup": "^8.5.1",
     "typescript-eslint": "^8.47.0"
   },
   "peerDependencies": {

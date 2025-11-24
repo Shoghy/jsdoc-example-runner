@@ -14,7 +14,10 @@ export default defineConfig([
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
       parserOptions: {
-        project: "tsconfig.json",
+        projectService: {
+          defaultProject: "tsconfig.json",
+          allowDefaultProject: ["eslint.config.ts", "tsup.config.ts"],
+        },
         tsconfigRootDir: import.meta.dirname,
       },
     },
