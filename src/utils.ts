@@ -1,7 +1,7 @@
 export async function runModuleString(code: string, basePath: string) {
   const rewritten = rewriteImports(code, basePath);
-  const blob = new Blob([rewritten], { type: "text/javascript" });
-  const moduleUrl = URL.createObjectURL(blob);
+  const base64 = Buffer.from(rewritten).toString("base64");
+  const moduleUrl = `data:text/javascript;base64,${base64}`;
   return import(moduleUrl);
 }
 
