@@ -73,6 +73,11 @@ export async function runExamplesInFile(path: string) {
   }
 
   for (const example of examples) {
-    await runModuleString(fileCode + "\n\n" + example, folderPath, fileExt);
+    try {
+      await runModuleString(fileCode + "\n\n" + example, folderPath, fileExt);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+    }
   }
 }

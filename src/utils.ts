@@ -1,4 +1,4 @@
-import { writeFile } from "fs/promises";
+import { writeFile, unlink } from "fs/promises";
 import { tmpdir } from "os";
 import path from "path";
 
@@ -13,7 +13,12 @@ export async function runModuleString(
     `temp_${Math.random().toString(36)}${ext !== undefined ? "." + ext : ""}`,
   );
   await writeFile(tempPath, rewritten);
-  return import(`file://${tempPath}`);
+
+  try {
+    await import(`file://${tempPath}`);
+  } finally {
+    await unlink(tempPath);
+  }
 }
 
 function rewriteImports(code: string, basePath: string) {
