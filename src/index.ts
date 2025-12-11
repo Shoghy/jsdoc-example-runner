@@ -1,3 +1,4 @@
+import fs from "fs";
 import { runModuleString } from "./utils.ts";
 
 const Eol = /\r?\n/;
@@ -16,23 +17,20 @@ enum State {
 }
 
 export async function runExamplesInFile(path: string) {
-  if (!path.startsWith(".") && !path.startsWith("/")) {
-    throw new Error("Path must start with `.` or `/`");
+  if (!fs.existsSync(path)) {
+    throw new Error("File doesn't exists");
   }
-
-  const absolutePath = import.meta.resolve(path).substring(7);
-  const file = Bun.file(absolutePath);
-  if (!(await file.exists())) {
+  if (fs.lstatSync(path).isDirectory()) {
     throw new Error("Path is not a file");
   }
 
-  const segmentedPath = absolutePath.split("/");
+  const segmentedPath = path.split("/");
   segmentedPath.pop();
   const folderPath = segmentedPath.join("/");
 
   const examples: string[] = [];
 
-  const fileCode = await file.text();
+  const fileCode = fs.readFileSync(path, "utf-8");
   const comments = fileCode.match(CommentReg);
   if (comments === null) {
     return;
