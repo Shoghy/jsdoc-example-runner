@@ -10,6 +10,9 @@
   "author": {
     "name": "Shoghy Martinez"
   },
+  "files": [
+    "**"
+  ],
   "license": "MIT",
   "keywords": [
     "test",
