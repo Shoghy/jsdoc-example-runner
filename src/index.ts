@@ -4,7 +4,7 @@ import { runModuleString } from "./utils.ts";
 const Eol = /\r?\n/;
 const StartComment = / *\/\*\*/;
 const EndComment = /.+\*\//;
-const StartExample = / *\* ```(t|j)s$/;
+const StartExample = / *\* ```[tj]s$/;
 const EndExample = / *\* ```$/;
 const LineTrimer = /^ *\* ?/;
 
