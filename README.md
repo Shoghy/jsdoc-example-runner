@@ -21,9 +21,9 @@ export function sum(a: number, b: number): number {
 }
 ````
 
-- 📄 Runs examples by appending them to the original file’s module scope
+- 📄 Runs examples by appending them to the original file's module scope
 
-- 🧪 Useful for lightweight testing with no test runner setup
+- 🧪 Ensure the examples are updated with the code
 
 - 🛠 Supports TypeScript or JavaScript files
 
