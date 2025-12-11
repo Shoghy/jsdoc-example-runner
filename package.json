@@ -24,7 +24,7 @@
     "url": "git+https://github.com/Shoghy/jsdoc-example-runner.git"
   },
   "scripts": {
-    "build": "tsup"
+    "build": "tsup && bun run move_files.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
