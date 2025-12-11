@@ -12,7 +12,7 @@ export async function runModuleString(
     tmpdir(),
     `temp_${Math.random().toString(36)}${ext !== undefined ? "." + ext : ""}`,
   );
-  writeFile(tempPath, rewritten);
+  await writeFile(tempPath, rewritten);
   return import(`file://${tempPath}`);
 }
 
