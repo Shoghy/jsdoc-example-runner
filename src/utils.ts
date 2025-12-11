@@ -21,7 +21,8 @@ function rewriteImports(code: string, basePath: string) {
     /import +([^'"]+?) +from +['"](.+?)['"]/g,
     (full, bindings, spec: string) => {
       if (spec.startsWith(".")) {
-        return `import ${bindings} from "${basePath + spec.substring(1)}"`;
+        const resolved = path.resolve(basePath, spec);
+        return `import ${bindings} from "${resolved}"`;
       }
       return full;
     },
