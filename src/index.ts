@@ -73,6 +73,6 @@ export async function runExamplesInFile(path: string) {
   }
 
   for (const example of examples) {
-    runModuleString(fileCode + "\n\n" + example, folderPath, fileExt);
+    await runModuleString(fileCode + "\n\n" + example, folderPath, fileExt);
   }
 }
