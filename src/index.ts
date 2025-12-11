@@ -25,7 +25,7 @@ export async function runExamplesInFile(path: string) {
   }
 
   const segmentedPath = path.split("/");
-  segmentedPath.pop();
+  const fileExt = segmentedPath.pop()?.split(".").pop();
   const folderPath = segmentedPath.join("/");
 
   const examples: string[] = [];
@@ -73,6 +73,6 @@ export async function runExamplesInFile(path: string) {
   }
 
   for (const example of examples) {
-    runModuleString(fileCode + "\n\n" + example, folderPath);
+    runModuleString(fileCode + "\n\n" + example, folderPath, fileExt);
   }
 }
