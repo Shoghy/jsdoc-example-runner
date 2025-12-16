@@ -6,16 +6,21 @@ export async function runModuleString(
   code: string,
   basePath: string,
   ext?: string,
-) {
+): Promise<[string, unknown]> {
   const rewritten = rewriteImports(code, basePath);
   const tempPath = path.join(
     tmpdir(),
     `temp_${Math.random().toString(36)}${ext !== undefined ? "." + ext : ""}`,
   );
-  await writeFile(tempPath, rewritten);
 
   try {
+    await writeFile(tempPath, rewritten);
+
     await import(`file://${tempPath}`);
+
+    return [tempPath, null];
+  } catch (e) {
+    return [tempPath, e];
   } finally {
     await unlink(tempPath);
   }

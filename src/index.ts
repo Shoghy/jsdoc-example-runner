@@ -8,12 +8,15 @@ const StartExample = / *\* ```[tj]s$/;
 const EndExample = / *\* ```$/;
 const LineTrimer = /^ *\* ?/;
 
-const CommentReg = / *\/\*\*\r?\n( *\*.*\r?\n)* *\*\//g;
-
 enum State {
   Outside,
   InComment,
   InExample,
+}
+
+interface Example {
+  startLine: number;
+  code: string;
 }
 
 export async function runExamplesInFile(path: string) {
@@ -28,56 +31,86 @@ export async function runExamplesInFile(path: string) {
   const fileExt = segmentedPath.pop()?.split(".").pop();
   const folderPath = segmentedPath.join("/");
 
-  const examples: string[] = [];
+  const examples: Example[] = [];
 
   const fileCode = fs.readFileSync(path, "utf-8");
-  const comments = fileCode.match(CommentReg);
-  if (comments === null) {
-    return;
+  const lines = fileCode.split(Eol);
+
+  let state = State.Outside as State;
+  for (let i = 0; i < lines.length; ++i) {
+    const line = lines[i];
+
+    switch (state) {
+      case State.Outside:
+        if (StartComment.test(line)) {
+          state = State.InComment;
+        }
+        break;
+
+      case State.InComment:
+        if (EndComment.test(line)) {
+          state = State.Outside;
+          continue;
+        }
+        if (StartExample.test(line)) {
+          state = State.InExample;
+          examples.push({ code: "", startLine: i });
+        }
+        break;
+      case State.InExample:
+        if (EndComment.test(line)) {
+          state = State.Outside;
+          continue;
+        }
+        if (EndExample.test(line)) {
+          state = State.InComment;
+          continue;
+        }
+
+        examples[examples.length - 1].code +=
+          line.replace(LineTrimer, "") + "\n";
+        break;
+    }
   }
 
-  for (const comment of comments) {
-    const lines = comment.split(Eol);
-    let state = State.Outside as State;
-    for (const line of lines) {
-      switch (state) {
-        case State.Outside:
-          if (StartComment.test(line)) {
-            state = State.InComment;
-          }
-          break;
-
-        case State.InComment:
-          if (EndComment.test(line)) {
-            state = State.Outside;
-            continue;
-          }
-          if (StartExample.test(line)) {
-            state = State.InExample;
-            examples.push("");
-          }
-          break;
-        case State.InExample:
-          if (EndComment.test(line)) {
-            state = State.Outside;
-            continue;
-          }
-          if (EndExample.test(line)) {
-            state = State.InComment;
-            continue;
-          }
-          examples[examples.length - 1] += line.replace(LineTrimer, "") + "\n";
-          break;
-      }
-    }
+  if (examples.length === 0) {
+    throw new Error("No examples were found");
   }
 
   for (const example of examples) {
-    try {
-      await runModuleString(fileCode + "\n\n" + example, folderPath, fileExt);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
+    const result = await runModuleString(
+      fileCode + "\n\n" + example.code,
+      folderPath,
+      fileExt,
+    );
+
+    const [tempPath, error] = result;
+    if (error === null) {
+      continue;
     }
+
+    if (!(error instanceof Error) || error.stack === undefined) {
+      throw error;
+    }
+
+    const stackLines = error.stack.split("\n");
+    const lineIndex = stackLines.findIndex((line) => line.includes(tempPath));
+    if (lineIndex > -1) {
+      const parts = stackLines[lineIndex].split(":");
+      parts.pop();
+      const lineStrNumber = parts.pop();
+      if (lineStrNumber !== undefined) {
+        const lineNumber =
+          example.startLine + parseInt(lineStrNumber, 10) - lines.length;
+        stackLines[lineIndex] = `    at ${path}:${lineNumber}`;
+      } else {
+        stackLines[lineIndex] = `    at ${path}:${example.startLine + 1}`;
+      }
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(stackLines.join("\n"));
+
+    throw "";
   }
 }
