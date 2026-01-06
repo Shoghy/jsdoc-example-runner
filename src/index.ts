@@ -108,9 +108,9 @@ export async function runExamplesInFile(path: string) {
       }
     }
 
-    // eslint-disable-next-line no-console
-    console.log(stackLines.join("\n"));
+    error.message = stackLines.join("\n");
+    error.stack = undefined;
 
-    throw "";
+    throw error;
   }
 }
