@@ -1,5 +1,4 @@
 import { writeFile, unlink } from "fs/promises";
-import { tmpdir } from "os";
 import path from "path";
 
 export async function runModuleString(
@@ -7,14 +6,13 @@ export async function runModuleString(
   basePath: string,
   ext?: string,
 ): Promise<[string, unknown]> {
-  const rewritten = rewriteImports(code, basePath);
   const tempPath = path.join(
-    tmpdir(),
+    basePath,
     `temp_${Math.random().toString(36)}${ext !== undefined ? "." + ext : ""}`,
   );
 
   try {
-    await writeFile(tempPath, rewritten);
+    await writeFile(tempPath, code);
 
     await import(`file://${tempPath}`);
 
@@ -24,17 +22,4 @@ export async function runModuleString(
   } finally {
     await unlink(tempPath);
   }
-}
-
-function rewriteImports(code: string, basePath: string) {
-  return code.replace(
-    /import +([^'"]+?) +from +['"](.+?)['"]/g,
-    (full, bindings, spec: string) => {
-      if (spec.startsWith(".")) {
-        const resolved = path.resolve(basePath, spec);
-        return `import ${bindings} from "${resolved}"`;
-      }
-      return full;
-    },
-  );
 }
