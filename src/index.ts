@@ -110,6 +110,9 @@ export async function runExamplesInFile(path: string) {
 
     error.message = stackLines.join("\n");
     error.stack = undefined;
+    if ("sourceURL" in error) {
+      error.sourceURL = undefined;
+    }
 
     throw error;
   }
